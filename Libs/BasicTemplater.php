@@ -2,35 +2,23 @@
 
 namespace Libs;
 
+use RuntimeException;
+
 class BasicTemplater
 {
-
     /** @var array<string, bool> */
     protected static array $imported_modules = [];
 
     public static function get_view_path(string $path): string
     {
-        return get_app_path() . 'Resources/Views/' . $path . '.basic.php';
-    }
-
-    private static function get_compiled_view_dir(string $path): string
-    {
-        $position = mb_strpos($path, 'Views');
-        $initial = $position + 6;
-        $path_with_folders = mb_substr($path, $initial);
-        $compiled_view_path = get_writable_path() . $path_with_folders;
-        if (!is_dir(dirname($compiled_view_path))) {
-            mkdir(dirname($compiled_view_path) . '/', 0777, true);
-        }
-
-        return $compiled_view_path;
+        return get_app_path().'Resources/Views/'.$path.'.basic.php';
     }
 
     public static function compile(string $template_path): string
     {
         $contents = file_get_contents($template_path);
         if ($contents === false) {
-            throw new \RuntimeException("Cannot read template file: $template_path");
+            throw new RuntimeException("Cannot read template file: $template_path");
         }
         $contents_file = explode("\n", $contents);
         $processed_lines = [];
@@ -41,11 +29,24 @@ class BasicTemplater
 
         // Save the compiled file to a temporary file and return its path.
         // Here we simply save to the same directory with a .compiled.php extension.
-        $compiled_path = self::get_compiled_view_dir($template_path . '.compiled.php');
+        $compiled_path = self::get_compiled_view_dir($template_path.'.compiled.php');
         // get file name
         file_put_contents($compiled_path, implode("\n", $processed_lines));
 
         return $compiled_path;
+    }
+
+    private static function get_compiled_view_dir(string $path): string
+    {
+        $position = mb_strpos($path, 'Views');
+        $initial = $position + 6;
+        $path_with_folders = mb_substr($path, $initial);
+        $compiled_view_path = get_writable_path().$path_with_folders;
+        if (! is_dir(dirname($compiled_view_path))) {
+            mkdir(dirname($compiled_view_path).'/', 0777, true);
+        }
+
+        return $compiled_view_path;
     }
 
     /**
@@ -54,7 +55,7 @@ class BasicTemplater
      */
     private static function process_line(string $line): string
     {
-        $trimmed = trim($line);
+        $trimmed = mb_trim($line);
 
         // === Handle Block Directives with Parentheses (manual parsing) ===
 
@@ -82,20 +83,20 @@ class BasicTemplater
             $component_view = self::extract_between_parentheses($trimmed);
 
             if ($component_view !== null) {
-                $component_view = trim($component_view);
+                $component_view = mb_trim($component_view);
 
                 // Check if it's a variable ($var) or a string ('view.name')
                 if (preg_match('/^\$[\w]+/', $component_view)) {
                     // It's a variable -> Resolve inside PHP dynamically
-                    if (!get_val(self::$imported_modules, BasicTemplater::class, false)) {
-                        self::$imported_modules[BasicTemplater::class] = true;
+                    if (! get_val(self::$imported_modules, self::class, false)) {
+                        self::$imported_modules[self::class] = true;
                         $append = "$php_open use Libs\BasicTemplater; $php_close ";
                     }
 
-                    return $append . "$php_open \$__compiled_view = BasicTemplater::compile(BasicTemplater::get_view_path({$component_view})); include \$__compiled_view $php_close";
+                    return $append."$php_open \$__compiled_view = BasicTemplater::compile(BasicTemplater::get_view_path({$component_view})); include \$__compiled_view $php_close";
                 }
                 // It's a string -> Resolve at compile time
-                $component_view = trim($component_view, " '\"");
+                $component_view = mb_trim($component_view, " '\"");
                 $compiled_component = self::compile(self::get_view_path($component_view));
 
                 return "$php_open include '{$compiled_component}'; $php_close";
@@ -107,7 +108,7 @@ class BasicTemplater
         if (mb_strpos($trimmed, '@method(') === 0) {
             $method = self::extract_between_parentheses($trimmed);
             if ($method !== null) {
-                $method = trim($method, " '\"");
+                $method = mb_trim($method, " '\"");
 
                 return "<input type=\"hidden\" name=\"_method\" value=\"{$method}\">";
             }
@@ -133,7 +134,7 @@ class BasicTemplater
         if (mb_strpos($trimmed, '@errors(') === 0) {
             $field = self::extract_between_parentheses($trimmed);
             if ($field !== null) {
-                $field = trim($field, " '\"");
+                $field = mb_trim($field, " '\"");
 
                 return "$php_open foreach(errors('{$field}') as \$error): $php_close";
             }
@@ -167,10 +168,10 @@ class BasicTemplater
             return "$php_open else: $php_close";
         }
         // Ensure `use Libs\Auth;` is added only once at the top
-        if (($trimmed === '@auth' || $trimmed === '@guest') && !get_val(self::$imported_modules, Auth::class, false)) {
+        if (($trimmed === '@auth' || $trimmed === '@guest') && ! get_val(self::$imported_modules, Auth::class, false)) {
             self::$imported_modules[Auth::class] = true;
 
-            return "$php_open use Libs\Auth; $php_close\n" . self::process_line($trimmed);
+            return "$php_open use Libs\Auth; $php_close\n".self::process_line($trimmed);
         }
         // @auth --> $php_open if(Auth::check()): $php_close
         if ($trimmed === '@auth') {
@@ -191,7 +192,7 @@ class BasicTemplater
                 break;
             }
             // Extract the content inside the braces.
-            $expression = trim(mb_substr($line, $start + 2, $end - $start - 2));
+            $expression = mb_trim(mb_substr($line, $start + 2, $end - $start - 2));
             $replacement = "$php_open echo htmlspecialchars({$expression}); $php_close";
             $line = substr_replace($line, $replacement, $start, ($end + 2) - $start);
         }

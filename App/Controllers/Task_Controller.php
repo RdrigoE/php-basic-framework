@@ -69,7 +69,7 @@ final class Task_Controller
                 'notification' => [
                     'type' => 'info',
                     'title' => 'Task created sucessfully',
-                ]
+                ],
             ]);
         } else {
             Request::redirect('tasks/create', [
@@ -78,8 +78,8 @@ final class Task_Controller
                 'notification' => [
                     'type' => 'error',
                     'title' => 'Form has errors',
-                    'message' => 'Fix the error and submit again'
-                ]
+                    'message' => 'Fix the error and submit again',
+                ],
             ]);
         }
 
@@ -111,8 +111,8 @@ final class Task_Controller
                     'notification' => [
                         'type' => 'error',
                         'title' => 'Form has errors',
-                        'message' => 'Fix the error and submit again'
-                    ]
+                        'message' => 'Fix the error and submit again',
+                    ],
                 ]
             );
         }
@@ -121,7 +121,7 @@ final class Task_Controller
             'notification' => [
                 'type' => 'info',
                 'title' => 'Task updated sucessfully',
-            ]
+            ],
         ]);
     }
 
@@ -136,8 +136,8 @@ final class Task_Controller
             'notification' => [
                 'title' => 'Task deleted',
                 'message' => "The task '$task->description' was deleted sucessfully",
-                'type' => 'info'
-            ]
+                'type' => 'info',
+            ],
         ]);
     }
 }

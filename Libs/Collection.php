@@ -1,7 +1,5 @@
 <?php
 
-
-
 /**
  * @template K
  * @template V
@@ -9,15 +7,31 @@
 class Collection
 {
     /**
-     * @param array<K,V> $collection
+     * @param  array<K,V>  $collection
      */
-    public function __construct(public array $collection)
+    public function __construct(public array $collection) {}
+
+    /**
+     * @param  K  $key
+     * @return V
+     */
+    public function __get($key)
     {
+        return $this->collection[$key];
     }
 
     /**
-     * @param K $key 
-     * @param V $default
+     * @param  K  $key
+     * @param  V  $value
+     */
+    public function __set($key, $value): void
+    {
+        $this->set($key, $value);
+    }
+
+    /**
+     * @param  K  $key
+     * @param  V  $default
      * @return V
      */
     public function get(mixed $key, mixed $default = null): mixed
@@ -26,33 +40,34 @@ class Collection
     }
 
     /**
-     * @param K $key
-     * @param V $value
+     * @param  K  $key
+     * @param  V  $value
      * @return Collection<K,V>
      */
-    public function set($key, $value): Collection
+    public function set($key, $value): self
     {
         $this->collection[$key] = $value;
+
         return $this;
     }
 
     /**
-     * @param callable $closure
      * @return Collection<K, V>
      */
-    public function map(callable $closure): Collection
+    public function map(callable $closure): self
     {
         $this->collection = array_map($closure, $this->collection);
+
         return $this;
     }
 
     /**
-     * @param callable $closure
      * @return Collection<K, V>
      */
-    public function filter(callable $closure): Collection
+    public function filter(callable $closure): self
     {
         $this->collection = array_filter($this->collection, $closure);
+
         return $this;
     }
 
@@ -63,23 +78,5 @@ class Collection
         unset($this->collection[$key]);
 
         return $value;
-    }
-
-    /**
-     * @param K $key
-     * @return V
-     */
-    public function __get($key)
-    {
-        return $this->collection[$key];
-    }
-
-    /**
-     * @param K $key
-     * @param V $value
-     */
-    public function __set($key, $value): void
-    {
-        $this->set($key, $value);
     }
 }

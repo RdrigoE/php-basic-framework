@@ -6,9 +6,9 @@ namespace Core;
 
 final class Request
 {
-	    public static function uri(): string
+    public static function uri(): string
     {
-        $uri = $_SERVER['REQUEST_URI'] ?? '/';
+        $uri = (string) $_SERVER['REQUEST_URI'] ?? '/';
 
         // Remove query string
         $uri = parse_url($uri, PHP_URL_PATH);

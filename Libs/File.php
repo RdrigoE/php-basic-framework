@@ -24,7 +24,7 @@ final class File
         $f = fopen($file_path, 'r');
         try {
             while ($line = fgets($f)) {
-                yield trim($line);
+                yield mb_trim($line);
             }
         } finally {
             fclose($f);

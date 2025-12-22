@@ -41,7 +41,7 @@ class Register_Controller
             ->add_callback('password_confirmation', function (Validation $validation, string $field) {
                 $password = $validation->password;
                 $len = mb_strlen($password);
-                if ($password != $validation->$field) {
+                if ($password !== $validation->$field) {
                     $validation->add_error($field, 'Passwords must match');
                 }
             });

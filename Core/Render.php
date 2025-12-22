@@ -6,7 +6,6 @@ namespace Core;
 
 use Libs\BasicTemplater;
 use Libs\Singleton;
-use RuntimeException;
 
 final class Render extends Singleton
 {
@@ -16,7 +15,6 @@ final class Render extends Singleton
      * @var array<string,mixed>
      */
     private static array $global_variables = ['errors' => [], 'attributes' => []];
-
 
     /**
      * @param  array<string,mixed>  $variables
