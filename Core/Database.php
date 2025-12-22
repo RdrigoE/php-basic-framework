@@ -86,7 +86,7 @@ final class Database extends Singleton
     /**
      * @param  string|array<string>  $value
      */
-    public function select(string|array $value): self
+    public function select(string|array $value): static
     {
         $select_values = Arr::wrap($value);
 
@@ -97,14 +97,14 @@ final class Database extends Singleton
         return $this;
     }
 
-    public function from(string $table_name): self
+    public function from(string $table_name): static
     {
         $this->table_name = $table_name;
 
         return $this;
     }
 
-    public function where(string $column, string $operator, string|int $value): self
+    public function where(string $column, string $operator, string|int $value): static
     {
         $this->wheres[] = [
             'type' => 'where',
@@ -116,7 +116,7 @@ final class Database extends Singleton
         return $this;
     }
 
-    public function like(string $column, string|int $value): self
+    public function like(string $column, string|int $value): static
     {
         $this->wheres[] = [
             'type' => 'like',
@@ -130,7 +130,7 @@ final class Database extends Singleton
     /**
      * @param  'inner'|'left'  $join_type
      */
-    public function join(string $table_name, string $key_1, string $key_2, string $join_type): self
+    public function join(string $table_name, string $key_1, string $key_2, string $join_type): static
     {
         $this->joins[] = [
             'join_type' => $join_type,
@@ -145,12 +145,14 @@ final class Database extends Singleton
     /**
      * @param  'DESC'|'ASC'  $type
      */
-    public function orderby(string $column, string $type): void
+    public function orderby(string $column, string $type): static
     {
         $this->orders[] = [
             'column' => $column,
             'type' => $type,
         ];
+
+        return $this;
     }
 
     /**

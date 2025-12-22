@@ -8,6 +8,7 @@ use Helpers\Arr;
 
 /**
  * @property-read int $id
+ * @mixin Database
  */
 abstract class ORM
 {

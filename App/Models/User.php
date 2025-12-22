@@ -7,8 +7,6 @@ namespace App\Models;
 use Core\Model;
 
 /**
- * @method static User where(string $name,string $operator,mixed $value)
- *
  * @property-read int $id
  * @property-read string $name
  * @property-read string $email

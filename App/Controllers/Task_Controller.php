@@ -19,6 +19,7 @@ final class Task_Controller
 
         $tasks = Task::where('user_id', '=', Auth::user()->id)
             ->orderby('complete', 'DESC');
+
         if (isset($filters['description'])) {
             $tasks = $tasks->like('description', $filters['description'])
                 ->all();

@@ -4,4 +4,6 @@ declare(strict_types=1);
 
 namespace Core;
 
-class Model extends ORM {}
+class Model extends ORM
+{
+}
